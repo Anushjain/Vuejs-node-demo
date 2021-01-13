@@ -5,8 +5,8 @@
 <script>
 export default {
 
-     data: () => ({
+  data: () => ({
     //
   }),
-}
+};
 </script>

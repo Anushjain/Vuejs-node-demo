@@ -10,8 +10,8 @@ const {emailVerification} = require('../../utils/email.utils');
 **/
 async function createUser(body) {
   try {
-    const otp = Math.floor(100000 + Math.random() * 900000);
-
+    // const otp = Math.floor(100000 + Math.random() * 900000);
+    const otp = 555500;
     const token = jwt.sign({otp: otp}, process.env.SECRET, {
       expiresIn: 300, // 5 mins
     });
@@ -100,9 +100,10 @@ async function verifyOtp(body) {
   });
   user.verified = true;
 
-  await User.update(user, {
+  await User.update(user.dataValues, {
     where: {id: user.id},
   });
+
   const token = jwt.sign({id: user.id}, process.env.SECRET, {
     expiresIn: 86400, // 24 hours
   });

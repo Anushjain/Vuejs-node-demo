@@ -19,22 +19,21 @@
 
 <script>
 export default {
-  name: "App",
+  name: 'App',
 
   data: () => ({
     //
   }),
   computed: {
-    
+
     isLoggedIn() {
-      console.log('VUE_APP_TITLE',process.env)
       return this.$store.getters.isAuthenticated;
     },
   },
   methods: {
     logout() {
-      this.$store.dispatch("logout");
-      this.$router.replace("/auth");
+      this.$store.dispatch('logout');
+      this.$router.replace('/auth');
     },
   },
 };
