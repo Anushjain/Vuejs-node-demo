@@ -10,6 +10,15 @@ module.exports = (sequelize, Sequelize) => {
     password: {
       type: Sequelize.STRING,
     },
+    token: {
+      type: Sequelize.STRING,
+    },
+    otp: {
+      type: Sequelize.STRING,
+    },
+    verified: {
+      type: Sequelize.BOOLEAN,
+    },
   });
 
   return User;

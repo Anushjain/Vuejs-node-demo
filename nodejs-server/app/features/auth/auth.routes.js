@@ -17,5 +17,6 @@ module.exports = function(app) {
   );
 
   app.post('/api/auth/login', controller.login);
+  app.post('/api/auth/verifyOtp', controller.verifyOtp);
   app.get('/api/auth/logout', controller.logout);
 };

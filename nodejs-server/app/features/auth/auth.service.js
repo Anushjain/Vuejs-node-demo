@@ -4,29 +4,33 @@ const User = db.user;
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const {checkBlacklist} = require('../../utils/blacklist.utils');
+const {emailVerification} = require('../../utils/email.utils');
 /**
- * Perform an asynchronous HTTP (Ajax) request.
  * @param {Object} body request body
 **/
 async function createUser(body) {
   try {
+    const otp = Math.floor(100000 + Math.random() * 900000);
+
+    const token = jwt.sign({otp: otp}, process.env.SECRET, {
+      expiresIn: 300, // 5 mins
+    });
     const user = await User.create({
       name: body.name,
       email: body.email,
+      verified: false,
       password: bcrypt.hashSync(body.password, 8),
+      otp: otp,
+      token: token,
 
     });
-    const token = jwt.sign({id: user.id}, process.env.SECRET, {
-      expiresIn: 86400, // 24 hours
-    });
-
-    return {token, user};
+    await emailVerification.sendOTP(user.email, otp);
+    return 'Otp has been send to verify email';
   } catch (error) {
     throw error;
   }
 }
 /**
- * Perform an asynchronous HTTP (Ajax) request.
  * @param {Object} body request body
 **/
 async function loginUser(body) {
@@ -37,6 +41,9 @@ async function loginUser(body) {
   });
   if (!user) {
     throw new Error('User Not found');
+  }
+  if (!user.verified) {
+    throw new Error('User Not Verified');
   }
 
 
@@ -70,8 +77,42 @@ async function logoutUser(token) {
   }
 }
 
+/**
+ * @param {Object} body request body
+**/
+async function verifyOtp(body) {
+  const user = await User.findOne({
+    where: {
+      email: body.email,
+    },
+  });
+  if (!user) {
+    throw new Error('User Not found');
+  }
+
+
+  jwt.verify(user.token, process.env.SECRET, (err, decoded) => {
+    if (err) {
+      throw new Error('Invalid OTP');
+    }
+
+    user.otp = decoded.otp;
+  });
+  user.verified = true;
+
+  await User.update(user, {
+    where: {id: user.id},
+  });
+  const token = jwt.sign({id: user.id}, process.env.SECRET, {
+    expiresIn: 86400, // 24 hours
+  });
+
+  return {token, user};
+}
+
 module.exports = {
   createUser,
   loginUser,
   logoutUser,
+  verifyOtp,
 };
