@@ -26,10 +26,8 @@ verifyTokenInBlacklist = (token) => {
             tokenlist = JSON.parse(val);
 
             if (token_list.includes(token)) {
-              // console.log('Blacklisted Token');
               status = false;
             } else {
-              // console.log('Token not found in blacklist');
               status = true;
             }
           }

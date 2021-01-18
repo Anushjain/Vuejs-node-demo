@@ -22,4 +22,10 @@ app.use('*', (req, res, next) => {
 app.get('/api/user', (req, res)=>{
   res.status(200).send({message: 'Hello User'});
 });
+
+app.use((err, req, res, next) => {
+  if (err) {
+    res.status(500).send({message: err.message});
+  }
+});
 require('./app/features/auth/auth.routes')(app);

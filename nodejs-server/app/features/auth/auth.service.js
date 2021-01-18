@@ -5,23 +5,18 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const {checkBlacklist} = require('../../utils/blacklist.utils');
 const {emailVerification} = require('../../utils/email.utils');
+const {otpVerification} = require('../../utils/otp.utils');
 /**
  * @param {Object} body request body
 **/
 async function createUser(body) {
   try {
-    // const otp = Math.floor(100000 + Math.random() * 900000);
-    const otp = 555500;
-    const token = jwt.sign({otp: otp}, process.env.SECRET, {
-      expiresIn: 300, // 5 mins
-    });
+    const otp = otpVerification.createOtp(body.email);
     const user = await User.create({
       name: body.name,
       email: body.email,
       verified: false,
       password: bcrypt.hashSync(body.password, 8),
-      otp: otp,
-      token: token,
 
     });
     await emailVerification.sendOTP(user.email, otp);
@@ -81,34 +76,36 @@ async function logoutUser(token) {
  * @param {Object} body request body
 **/
 async function verifyOtp(body) {
-  const user = await User.findOne({
-    where: {
-      email: body.email,
-    },
-  });
-  if (!user) {
-    throw new Error('User Not found');
-  }
-
-
-  jwt.verify(user.token, process.env.SECRET, (err, decoded) => {
-    if (err) {
-      throw new Error('Invalid OTP');
+  try {
+    const user = await User.findOne({
+      where: {
+        email: body.email,
+      },
+    });
+    if (!user) {
+      throw new Error('User Not found');
     }
 
-    user.otp = decoded.otp;
-  });
-  user.verified = true;
+    const result = await otpVerification.verifyOtp(body.email, body.otp);
+    console.log(result);
+    if (result.status) {
+      user.verified = true;
+      await User.update(user.dataValues, {
+        where: {id: user.id},
+      });
+    } else {
+      throw new Error('inValid Otp');
+    }
 
-  await User.update(user.dataValues, {
-    where: {id: user.id},
-  });
 
-  const token = jwt.sign({id: user.id}, process.env.SECRET, {
-    expiresIn: 86400, // 24 hours
-  });
+    const token = jwt.sign({id: user.id}, process.env.SECRET, {
+      expiresIn: 86400, // 24 hours
+    });
 
-  return {token, user};
+    return {token, user};
+  } catch (error) {
+    throw error;
+  }
 }
 
 module.exports = {

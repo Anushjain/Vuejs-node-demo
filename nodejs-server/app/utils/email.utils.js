@@ -9,8 +9,8 @@ async function sendOTP(email, otp) {
   const smtpTransport = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-      user: 'developanush@gmail.com',
-      pass: 'Open@1998',
+      user: process.env.EMAIL,
+      pass: process.env.EMAILPASSWORD,
     },
   });
   let message = 'Hello,<br> Enter the OTP to verify your email.<br> <b>';
