@@ -1,3 +1,5 @@
+import { HTTP } from '../../../../http-common';
+
 export default {
   async login(context, payload) {
     return context.dispatch('auth', {
@@ -13,25 +15,20 @@ export default {
   },
   async auth(context, payload) {
     const { mode } = payload;
-    let url = 'http://localhost:8080/api/auth/login';
+    let url = 'auth/login';
 
     if (mode === 'signup') {
-      url = 'http://localhost:8080/api/auth/signup';
+      url = 'auth/signup';
     }
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        name: payload.name,
-        email: payload.email,
-        password: payload.password,
+    const response = await HTTP.post(
+      url,
+      payload,
+    );
 
-      }),
-    });
-
-    const responseData = await response.json();
-
-    if (!response.ok) {
+    const responseData = response.data;
+    // eslint-disable-next-line no-console
+    console.log(response);
+    if (response.status !== 200) {
       const error = new Error(
         responseData.message || 'Failed to authenticate. Check your login data.',
       );
@@ -41,11 +38,10 @@ export default {
     if (mode === 'login') {
       localStorage.setItem('userId', responseData.email);
       context.commit('setUser', {
-        token: responseData.accessToken,
         userId: responseData.email,
       });
     } else {
-      localStorage.setItem('userId', payload.email);
+      localStorage.setItem('userId', responseData.email);
     }
   },
   tryLogin(context) {
@@ -59,14 +55,12 @@ export default {
     }
   },
   async logout(context) {
-    const url = 'http://localhost:8080/api/auth/logout';
-    const response = await fetch(url, {
-      method: 'GET',
-    });
-    const responseData = await response.json();
-    if (!response.ok) {
+    const url = 'auth/logout';
+    const response = await HTTP.get(url);
+    const responseData = response.data;
+    if (response.status !== 200) {
       const error = new Error(
-        responseData.message || 'Failed to authenticate. Check your login data.',
+        responseData.message || 'Failed to Logout.',
       );
       throw error;
     }
@@ -78,21 +72,17 @@ export default {
   },
 
   async verifyOtp(context, payload) {
-    const url = 'http://localhost:8080/api/auth/verifyOtp';
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        email: localStorage.getItem('userId'),
-        otp: payload.otp,
-      }),
+    const url = 'auth/verifyOtp';
+    const response = await HTTP.post(url, {
+      email: localStorage.getItem('userId'),
+      otp: payload.otp,
     });
 
-    const responseData = await response.json();
+    const responseData = response.data;
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       const error = new Error(
-        responseData.message || 'Failed to authenticate. Check your login data.',
+        responseData.message || 'Failed to authenticate',
       );
       throw error;
     }

@@ -1,24 +1,23 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Home from './pages/home/Home.vue';
+import HomeRouter from './pages/home/home.router';
 import NotFound from './pages/NotFound.vue';
-import UserAuth from './pages/auth/UserAuth.vue';
-import OtpVerification from './pages/auth/OtpVerification.vue';
+import authRoutes from './pages/auth/auth.router';
 import store from './store/index';
 
 Vue.use(VueRouter);
 
 const router = new VueRouter({
   routes: [
-    { path: '/', redirect: '/home' },
-    { path: '/home', component: Home, meta: { requiresAuth: true } },
-    { path: '/auth', component: UserAuth, meta: { requiresUnauth: true } },
-    { path: '/verifyOtp', component: OtpVerification, meta: { requiresUnauth: true } },
+    ...HomeRouter,
+    ...authRoutes,
     { path: '/:notFound(.*)', component: NotFound },
   ],
 });
 
 router.beforeEach((to, _, next) => {
+  // eslint-disable-next-line no-console
+  console.log('auth', store.getters.isAuthenticated);
   if (to.meta.requiresAuth && !store.getters.isAuthenticated) {
     next('/auth');
   } else {

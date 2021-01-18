@@ -1,14 +1,14 @@
+import { HTTP } from '../../../../http-common';
+
 export default {
 
   async getUser() {
-    const url = 'http://localhost:8080/api/user';
+    const url = 'user';
 
-    const response = await fetch(url, {
-      method: 'GET',
-    });
-    const responseData = await response.json();
+    const response = await HTTP.post(url);
+    const responseData = response.data;
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       const error = new Error(
         responseData.message || 'Failed to Fetch.',
       );
