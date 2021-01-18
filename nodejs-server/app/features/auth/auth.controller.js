@@ -4,15 +4,11 @@ const authService =require('./auth.service');
 
 exports.signup = async (req, res) => {
   // Save User to Database
-  try {
-    const message = await authService.createUser(req.body);
+  const message = await authService.createUser(req.body);
 
-    res.status(200).send({
-      message,
-    });
-  } catch (error) {
-    res.status(500).send({message: error.message});
-  }
+  res.status(200).send({
+    message,
+  });
 };
 
 exports.login = async (req, res) => {
@@ -26,28 +22,21 @@ exports.login = async (req, res) => {
       id: resUser.user.id,
       name: resUser.user.name,
       email: resUser.user.email,
-      accessToken: resUser.token,
     });
-  } catch (err) {
-    res.status(500).send({message: err.message});
+  } catch (error) {
+    res.status(400).send({message: error.message});
   }
 };
 
 exports.logout = async (req, res) => {
-  try {
-    const token = req.headers['x-access-token'];
-    const obj = await authService.logoutUser(token);
-    res.status(200).send(obj);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({message: error.message});
-  }
+  const token = req.cookies.authToken;
+  const obj = await authService.logoutUser(token);
+  res.status(200).send(obj);
 };
 
 exports.verifyOtp = async (req, res) => {
   try {
     resUser = await authService.verifyOtp(req.body);
-    console.log(resUser);
     res.cookie('authToken', resUser.token, {
       maxAge: 86400,
       httpOnly: true,
@@ -56,10 +45,8 @@ exports.verifyOtp = async (req, res) => {
       id: resUser.user.id,
       name: resUser.user.name,
       email: resUser.user.email,
-      accessToken: resUser.token,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).send({message: error.message});
+    res.status(400).send({message: error.message});
   }
 };

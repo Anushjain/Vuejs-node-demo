@@ -3,7 +3,7 @@ const nodemailer = require('nodemailer');
 /**
  * Perform an asynchronous HTTP (Ajax) request.
  * @param {string} email Email
- *  @param {string} otp Otp token
+ * @param {string} otp Otp token
 **/
 async function sendOTP(email, otp) {
   const smtpTransport = nodemailer.createTransport({

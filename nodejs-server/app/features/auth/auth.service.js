@@ -10,20 +10,16 @@ const {otpVerification} = require('../../utils/otp.utils');
  * @param {Object} body request body
 **/
 async function createUser(body) {
-  try {
-    const otp = otpVerification.createOtp(body.email);
-    const user = await User.create({
-      name: body.name,
-      email: body.email,
-      verified: false,
-      password: bcrypt.hashSync(body.password, 8),
+  const otp = otpVerification.createOtp(body.email);
+  const user = await User.create({
+    name: body.name,
+    email: body.email,
+    verified: false,
+    password: bcrypt.hashSync(body.password, 8),
 
-    });
-    await emailVerification.sendOTP(user.email, otp);
-    return 'Otp has been send to verify email';
-  } catch (error) {
-    throw error;
-  }
+  });
+  await emailVerification.sendOTP(user.email, otp);
+  return 'Otp has been send to verify email';
 }
 /**
  * @param {Object} body request body
@@ -35,10 +31,10 @@ async function loginUser(body) {
     },
   });
   if (!user) {
-    throw new Error('User Not found');
+    throw new ErrorHandler(404, 'No Such User');
   }
   if (!user.verified) {
-    throw new Error('User Not Verified');
+    throw new ErrorHandler(404, 'please verify before login');
   }
 
 
@@ -48,7 +44,7 @@ async function loginUser(body) {
   );
 
   if (!passwordIsValid) {
-    throw new Error('Invalid Password');
+    throw new ErrorHandler(404, 'Invalid Password');
   }
 
   const token = jwt.sign({id: user.id}, process.env.SECRET, {
@@ -76,36 +72,32 @@ async function logoutUser(token) {
  * @param {Object} body request body
 **/
 async function verifyOtp(body) {
-  try {
-    const user = await User.findOne({
-      where: {
-        email: body.email,
-      },
-    });
-    if (!user) {
-      throw new Error('User Not found');
-    }
-
-    const result = await otpVerification.verifyOtp(body.email, body.otp);
-    console.log(result);
-    if (result.status) {
-      user.verified = true;
-      await User.update(user.dataValues, {
-        where: {id: user.id},
-      });
-    } else {
-      throw new Error('inValid Otp');
-    }
-
-
-    const token = jwt.sign({id: user.id}, process.env.SECRET, {
-      expiresIn: 86400, // 24 hours
-    });
-
-    return {token, user};
-  } catch (error) {
-    throw error;
+  const user = await User.findOne({
+    where: {
+      email: body.email,
+    },
+  });
+  if (!user) {
+    throw new ErrorHandler(404, 'User not found');
   }
+
+  const result = await otpVerification.verifyOtp(body.email, body.otp);
+  console.log(result);
+  if (result.status) {
+    user.verified = true;
+    await User.update(user.dataValues, {
+      where: {id: user.id},
+    });
+  } else {
+    throw new ErrorHandler(404, 'Invalid OTP');
+  }
+
+
+  const token = jwt.sign({id: user.id}, process.env.SECRET, {
+    expiresIn: 86400, // 24 hours
+  });
+
+  return {token, user};
 }
 
 module.exports = {

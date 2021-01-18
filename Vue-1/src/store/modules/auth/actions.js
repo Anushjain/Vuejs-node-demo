@@ -39,7 +39,6 @@ export default {
     }
 
     if (mode === 'login') {
-      localStorage.setItem('token', responseData.accessToken);
       localStorage.setItem('userId', responseData.email);
       context.commit('setUser', {
         token: responseData.accessToken,
@@ -50,12 +49,11 @@ export default {
     }
   },
   tryLogin(context) {
-    const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
 
-    if (token && userId) {
+    if (userId) {
       context.commit('setUser', {
-        token,
+
         userId,
       });
     }
@@ -72,11 +70,9 @@ export default {
       );
       throw error;
     }
-    localStorage.removeItem('token');
     localStorage.removeItem('userId');
 
     context.commit('setUser', {
-      token: null,
       userId: null,
     });
   },
@@ -100,8 +96,6 @@ export default {
       );
       throw error;
     }
-
-    localStorage.setItem('token', responseData.accessToken);
     localStorage.setItem('userId', responseData.email);
     context.commit('setUser', {
       token: responseData.accessToken,

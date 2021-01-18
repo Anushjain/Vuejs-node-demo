@@ -1,11 +1,16 @@
 const redis = require('redis');
 const client = redis.createClient();
 
+/**
+ * Perform an asynchronous HTTP (Ajax) request.
+ * @param {string} token add token to blocklist
+ * @param {string} blacklist Otp blocklist
+**/
 addTokenInBlacklist = (token, blacklist) => {
   try {
     tokenlist = JSON.parse(blacklist);
     tokenlist=tokenlist ?tokenlist :[];
-    token_list.push(token);
+    tokenlist.push(token);
 
     client.set('blacklist', JSON.stringify(tokenlist), redis.print);
   } catch (err) {
@@ -13,6 +18,11 @@ addTokenInBlacklist = (token, blacklist) => {
   }
 };
 
+/**
+ * Perform an asynchronous HTTP (Ajax) request.
+ * @param {string} token check token in blocklist
+ * @return {Promise} for verfication
+**/
 verifyTokenInBlacklist = (token) => {
   return new Promise(async (resolve, reject) => {
     client.get('blacklist', (err, val) => {
@@ -25,7 +35,7 @@ verifyTokenInBlacklist = (token) => {
           if (val) {
             tokenlist = JSON.parse(val);
 
-            if (token_list.includes(token)) {
+            if (tokenlist.includes(token)) {
               status = false;
             } else {
               status = true;

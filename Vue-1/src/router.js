@@ -21,8 +21,6 @@ const router = new VueRouter({
 router.beforeEach((to, _, next) => {
   if (to.meta.requiresAuth && !store.getters.isAuthenticated) {
     next('/auth');
-  } else if (to.meta.requiresUnauth && store.getters.isAuthenticated) {
-    next('/coaches');
   } else {
     next();
   }
