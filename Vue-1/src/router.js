@@ -16,10 +16,10 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, _, next) => {
-  // eslint-disable-next-line no-console
-  console.log('auth', store.getters.isAuthenticated);
   if (to.meta.requiresAuth && !store.getters.isAuthenticated) {
     next('/auth');
+  } else if (to.meta.requiresUnauth && store.getters.isAuthenticated) {
+    next('/home');
   } else {
     next();
   }

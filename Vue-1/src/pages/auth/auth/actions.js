@@ -49,7 +49,6 @@ export default {
 
     if (userId) {
       context.commit('setUser', {
-
         userId,
       });
     }

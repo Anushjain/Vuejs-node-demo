@@ -13,5 +13,13 @@ export default {
   data: () => ({
     name: '',
   }),
+  methods: {
+    async checklogin() {
+      await this.$store.dispatch('tryLogin');
+    },
+  },
+  mounted() {
+    this.checklogin();
+  },
 };
 </script>

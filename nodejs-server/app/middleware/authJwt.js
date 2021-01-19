@@ -4,8 +4,8 @@ const {checkBlacklist} = require('../utils/blacklist.utils');
 
 
 verifyToken = async (req, res, next) => {
-  const token = req.cookies.authToken;
-  console.log('token', req.cookies);
+  const token = req.cookies['authToken'];
+  console.log('cookkies', req.cookies);
   try {
     if (!token) {
       return res.status(403).send({

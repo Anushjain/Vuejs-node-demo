@@ -5,7 +5,7 @@ import getters from './getters';
 export default {
   state() {
     return {
-      userId: null,
+      userId: localStorage.getItem('userId'),
       didAutoLogout: false,
     };
   },

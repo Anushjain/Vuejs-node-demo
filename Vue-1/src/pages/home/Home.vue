@@ -25,8 +25,13 @@ export default {
   }),
   methods: {
     async logout() {
-      await this.$store.dispatch('logout');
-      this.$router.replace('/auth');
+      try {
+        await this.$store.dispatch('logout');
+        this.$router.replace('/auth');
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log(error);
+      }
     },
     async getData() {
       this.data = await this.$store.dispatch('getUser');
