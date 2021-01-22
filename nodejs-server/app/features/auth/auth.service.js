@@ -31,10 +31,10 @@ async function loginUser(body) {
     },
   });
   if (!user) {
-    throw new ErrorHandler(404, 'No Such User');
+    throw new Error('No Such User');
   }
   if (!user.verified) {
-    throw new ErrorHandler(404, 'please verify before login');
+    throw new Error('please verify before login');
   }
 
 
@@ -44,7 +44,7 @@ async function loginUser(body) {
   );
 
   if (!passwordIsValid) {
-    throw new ErrorHandler(404, 'Invalid Password');
+    throw new Error(404, 'Invalid Password');
   }
 
   const token = jwt.sign({id: user.id}, process.env.SECRET, {
@@ -78,18 +78,18 @@ async function verifyOtp(body) {
     },
   });
   if (!user) {
-    throw new ErrorHandler(404, 'User not found');
+    throw new Error( 'User not found');
   }
 
   const result = await otpVerification.verifyOtp(body.email, body.otp);
-  console.log(result);
+
   if (result.status) {
     user.verified = true;
     await User.update(user.dataValues, {
       where: {id: user.id},
     });
   } else {
-    throw new ErrorHandler(404, 'Invalid OTP');
+    throw new Error( 'Invalid OTP');
   }
 
 

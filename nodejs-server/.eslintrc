@@ -65,7 +65,7 @@
       "never"
     ],
     "no-trailing-spaces": [
-      "error",
+      "warn",
       {
         "skipBlankLines": false
       }

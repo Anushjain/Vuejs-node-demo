@@ -6,8 +6,8 @@ const client = redis.createClient();
  * @param {string} email Email for creating redis mapping
 **/
 
-createOtp = (email) =>{
-  const otp= Math.floor(100000 + Math.random() * 900000);
+createOtp = (email) => {
+  const otp = Math.floor(100000 + Math.random() * 900000);
   setOtp(email, otp);
   return otp;
 };
@@ -17,7 +17,7 @@ createOtp = (email) =>{
  * @param {string} email Email for creating redis mapping
  * @param {string} otp Otp token
 **/
-setOtp = (email, otp) =>{
+setOtp = (email, otp) => {
   try {
     client.set(email, otp);
     client.expire(email, 600);

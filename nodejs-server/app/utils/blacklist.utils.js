@@ -9,7 +9,7 @@ const client = redis.createClient();
 addTokenInBlacklist = (token, blacklist) => {
   try {
     tokenlist = JSON.parse(blacklist);
-    tokenlist=tokenlist ?tokenlist :[];
+    tokenlist = tokenlist ? tokenlist : [];
     tokenlist.push(token);
 
     client.set('blacklist', JSON.stringify(tokenlist), redis.print);

@@ -22,7 +22,7 @@ async function sendOTP(email, otp) {
   };
 
   try {
-    smtpTransport.sendMail(mailOptions, function(error, response) {
+    smtpTransport.sendMail(mailOptions, (error, response) => {
       if (error) {
         throw error;
       } else {
