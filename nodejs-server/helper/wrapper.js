@@ -4,6 +4,7 @@ errorHandler = (fn) => async (req, res, next) => {
   try {
     await fn(req, res, next)
   } catch (error) {
+    console.log(error)
     if (error instanceof AppError) {
       res.status(error.statusCode).send({ msg: error.message })
     }

@@ -7,15 +7,12 @@ const client = redis.createClient();
  * @param {string} blacklist Otp blocklist
 **/
 addTokenInBlacklist = (token, blacklist) => {
-  try {
+
     tokenlist = JSON.parse(blacklist);
     tokenlist = tokenlist ? tokenlist : [];
     tokenlist.push(token);
-
     client.set('blacklist', JSON.stringify(tokenlist), redis.print);
-  } catch (err) {
-    throw err;
-  }
+ 
 };
 
 /**

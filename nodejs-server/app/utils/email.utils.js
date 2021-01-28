@@ -21,13 +21,7 @@ async function sendOTP (email, otp) {
     html: message
   }
 
-  smtpTransport.sendMail(mailOptions, (error, response) => {
-    if (error) {
-      throw error
-    } else {
-      console.log('Message sent: ' + response.message)
-    }
-  })
+  smtpTransport.sendMail(mailOptions)
 }
 const emailVerification = {
   sendOTP
