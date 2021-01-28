@@ -1,16 +1,17 @@
 module.exports = {
-  'env': {
-    'browser': true,
-    'es2021': true,
-    'node': true,
+  env: {
+    browser: true,
+    es2021: true,
+    node: true
   },
-  'extends': [
-    'google',
+  extends: [
+    'standard'
   ],
-  'parserOptions': {
-    'ecmaVersion': 12,
-    'sourceType': 'module',
+  parser: 'babel-eslint',
+  parserOptions: {
+    ecmaVersion: 12,
+    sourceType: 'module'
   },
-  'rules': {
-  },
-};
+  rules: {
+  }
+}

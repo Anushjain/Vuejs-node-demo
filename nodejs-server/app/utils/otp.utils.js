@@ -18,12 +18,9 @@ createOtp = (email) => {
  * @param {string} otp Otp token
 **/
 setOtp = (email, otp) => {
-  try {
+
     client.set(email, otp);
     client.expire(email, 600);
-  } catch (error) {
-    throw error;
-  }
 };
 
 /**
